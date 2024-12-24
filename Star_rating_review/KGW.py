@@ -10,13 +10,8 @@ import pandas as pd
 import re
 import time
 import datetime
-import os
-from pandas.compat.numpy import np_long
 
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-import random
 
 
 
