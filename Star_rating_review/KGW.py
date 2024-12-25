@@ -122,11 +122,11 @@ for star_i in range(1, 6):
                     except:  # 예외 처리 (존재하지 않는 항목 무시)
                         print('pass:', text_i)
 
-                    # 크롤링된 제목을 데이터프레임에 저장
-                    df_section_titles = pd.DataFrame(titles, columns=['titles'])
-                    df_section_titles['category'] = category[star_i - 1]
-                    df_titles = pd.concat([df_titles, df_section_titles], axis='rows', ignore_index=True)
-                    titles.clear()
+                # 크롤링된 제목을 데이터프레임에 저장
+                df_section_titles = pd.DataFrame(titles, columns=['titles'])
+                df_section_titles['category'] = category[star_i - 1]
+                df_titles = pd.concat([df_titles, df_section_titles], axis='rows', ignore_index=True)
+                titles.clear()
 
 
     # 카테고리별 데이터프레임 정보 출력
