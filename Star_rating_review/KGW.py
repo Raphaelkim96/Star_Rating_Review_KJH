@@ -40,7 +40,8 @@ for star_i in range(1, 6):
     # 데이터 프레임 초기화
     df_titles = pd.DataFrame()
 
-    url = ('https://www.coupang.com/vp/products/6216951509?itemId=19281252171&vendorItemId=80633050166&sourceType=srp_product_ads&clickEventId=519eb0d0-c19f-11ef-b7bd-d87ffeb15a9a&korePlacement=15&koreSubPlacement=9&q=%EC%83%9D%EB%AC%BC&itemsCount=36&searchId=009ab77c946843a9b03f6024f22e827c&rank=8&searchRank=8&isAddedCart=')
+    url = ('https://www.coupang.com/vp/products/7536147202?itemId=19830714329&vendorItemId=86932451672&q=%EC%83%9D%EB%AC%BC+%EA%BD%83%EA%B2%8C&itemsCount=36&searchId=e7858d74c9ea42cc9981221ea1bf9844&rank=15&searchRank=15&isAddedCart=')
+
 
     driver.get(url)  # 브라우저 띄우기
     time.sleep(3)  # 버튼 생성이 될때까지 기다리는 딜레이
@@ -55,6 +56,17 @@ for star_i in range(1, 6):
     time.sleep(0.5)
     driver.find_element(By.XPATH, Star_button_xpath).click()
 
+
+    #각 별점별 리뷰 갯수 확인
+    element = driver.find_element('xpath', '// *[ @ id = "btfTab"] / ul[2] / li[2] / div / div[6] / section[2] / div[3] / div[2] / ul / li[{}] / div[3]'.format(star_i))
+    text = element.text
+    print('리뷰갯수: ',text)
+
+    #받아온 리뷰갯수 페이지 수만큼 나누기
+    pass_num = int(text.replace(',', ''))/50
+    print('넘길 페이지: ', int(pass_num))
+
+
     # 별점 보기 안에 별갯수 버튼
     Star_in_button_xpath = ' // *[ @ id = "btfTab"] / ul[2] / li[2] / div / div[6] / section[2] / div[3] / div[2] / ul / li[{}]'.format(
         star_i)
@@ -63,9 +75,11 @@ for star_i in range(1, 6):
     time.sleep(3)
 
 
+
+
     titles = []
     #전체 페이지 갯수(옆으로 넘기기 버튼 횟수)
-    for next_page_i in range(20):
+    for next_page_i in range(int(pass_num)):
 
         if next_page_i!=0:
             next_page_xpath = '//*[@id="btfTab"]/ul[2]/li[2]/div/div[6]/section[4]/div[3]/button[12]'
@@ -84,33 +98,35 @@ for star_i in range(1, 6):
             driver.find_element(By.XPATH, page_xpath).click()
 
             for text_i in range(1, 5):
+                
+                #쿠팡이 막아놓은 주소 변동 뚫기
+                for article_index in [3, 4]:
+                    title_xpath = '//*[@id="btfTab"]/ul[2]/li[2]/div/div[6]/section[4]/article[{}]/div[{}]/div'.format(text_i, article_index)
 
-                title_xpath = '//*[@id="btfTab"]/ul[2]/li[2]/div/div[6]/section[4]/article[{}]/div[4]/div'.format(text_i)
+                    try:
+                        # 뷰 크롤링 및 한글 외 문자 제거
+                        title = driver.find_element(By.XPATH, title_xpath).text
+                        title = re.compile('[^가-힣 ]').sub(' ', title)  # 한글과 공백만 남김
+                        title = re.sub(' +', ' ', title).strip()  # 여러 공백을 하나로 줄이고 양 끝 공백 제거
 
-                try:
-                    # 뷰 크롤링 및 한글 외 문자 제거
-                    title = driver.find_element(By.XPATH, title_xpath).text
-                    title = re.compile('[^가-힣 ]').sub(' ', title)  # 한글과 공백만 남김
-                    title = re.sub(' +', ' ', title).strip()  # 여러 공백을 하나로 줄이고 양 끝 공백 제거
-
-                    # title이 비어있지 않을 때만 추가
-                    if title:
-                        if title and all(exclude not in title for exclude in ["명에게 도움 됨", "신선도 적당해요","신선도 아주 신선해요","생각보다 덜 신선해요"]):
-                            titles.append(title)
-                            print('text:', titles)
+                        # title이 비어있지 않을 때만 추가
+                        if title:
+                            if title and all(exclude not in title for exclude in ["명에게 도움 됨", "신선도 적당해요", "신선도 아주 신선해요", "생각보다 덜 신선해요"]):
+                                titles.append(title)
+                                print('text저장:', titles)
+                            else:
+                                print('pass (trash):', text_i, title)
                         else:
-                            print('pass (trash):', text_i)
-                    else:
-                        print('pass (Null):', text_i)
+                            print('pass (Null):', text_i)
 
-                except:  # 예외 처리 (존재하지 않는 항목 무시)
-                    print('pass:', text_i)
+                    except:  # 예외 처리 (존재하지 않는 항목 무시)
+                        print('pass:', text_i)
 
-                # 크롤링된 제목을 데이터프레임에 저장
-                df_section_titles = pd.DataFrame(titles, columns=['titles'])
-                df_section_titles['category'] = category[star_i - 1]
-                df_titles = pd.concat([df_titles, df_section_titles], axis='rows', ignore_index=True)
-                titles.clear()
+                    # 크롤링된 제목을 데이터프레임에 저장
+                    df_section_titles = pd.DataFrame(titles, columns=['titles'])
+                    df_section_titles['category'] = category[star_i - 1]
+                    df_titles = pd.concat([df_titles, df_section_titles], axis='rows', ignore_index=True)
+                    titles.clear()
 
 
     # 카테고리별 데이터프레임 정보 출력
@@ -122,7 +138,7 @@ for star_i in range(1, 6):
     titles.clear()
 
     # 카테고리별 데이터를 CSV 파일로 저장
-    df_titles.to_csv('C:/workspace/Star_rating_review/test/{}_star.csv'.format(category[star_i-1]), index=False)
+    df_titles.to_csv('C:/workspace/Star_rating_review/test/crab_{}_star.csv'.format(category[star_i-1]), index=False)
 
 
     time.sleep(1)
