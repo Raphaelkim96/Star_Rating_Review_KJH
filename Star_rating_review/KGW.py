@@ -35,25 +35,24 @@ category = ['Five','Four','Three','Two','One']
 
 
 # 1~5점까지 반복
-for star_i in range(1, 6):
+for star_i in range(4, 6):
 
     # 데이터 프레임 초기화
     df_titles = pd.DataFrame()
 
-    url = ('https://www.coupang.com/vp/products/7536147202?itemId=19830714329&vendorItemId=86932451672&q=%EC%83%9D%EB%AC%BC+%EA%BD%83%EA%B2%8C&itemsCount=36&searchId=e7858d74c9ea42cc9981221ea1bf9844&rank=15&searchRank=15&isAddedCart=')
-
+    url = ('https://www.coupang.com/vp/products/6357346236?itemId=13404238888&vendorItemId=80658954948&q=%EC%A3%BC%EA%BE%B8%EB%AF%B8&itemsCount=36&searchId=0bab7a2aaefe4e0e95475f873875ef35&rank=0&searchRank=0&isAddedCart=')
 
     driver.get(url)  # 브라우저 띄우기
     time.sleep(3)  # 버튼 생성이 될때까지 기다리는 딜레이
 
     # 리뷰 버튼
     Review_button_xpath = '//*[@id="btfTab"]/ul[1]/li[2]'
-    time.sleep(1)
+    time.sleep(2)
     driver.find_element(By.XPATH, Review_button_xpath).click()
 
     # 별점 보기 버튼
     Star_button_xpath = '// *[ @ id = "btfTab"] / ul[2] / li[2] / div / div[6] / section[2] / div[3]'
-    time.sleep(0.5)
+    time.sleep(2)
     driver.find_element(By.XPATH, Star_button_xpath).click()
 
 
@@ -64,15 +63,18 @@ for star_i in range(1, 6):
 
     #받아온 리뷰갯수 페이지 수만큼 나누기
     pass_num = int(text.replace(',', ''))/50
+
+    if pass_num>30:
+        pass_num = 30
+
     print('넘길 페이지: ', int(pass_num))
 
 
     # 별점 보기 안에 별갯수 버튼
-    Star_in_button_xpath = ' // *[ @ id = "btfTab"] / ul[2] / li[2] / div / div[6] / section[2] / div[3] / div[2] / ul / li[{}]'.format(
-        star_i)
+    Star_in_button_xpath = ' // *[ @ id = "btfTab"] / ul[2] / li[2] / div / div[6] / section[2] / div[3] / div[2] / ul / li[{}]'.format(star_i)
     time.sleep(0.5)
     driver.find_element(By.XPATH, Star_in_button_xpath).click()
-    time.sleep(3)
+    time.sleep(2)
 
 
 
@@ -86,13 +88,13 @@ for star_i in range(1, 6):
             time.sleep(2)
             driver.find_element(By.XPATH, next_page_xpath).click()
 
-        print('next_page_i: ', next_page_i)
+        print('next_page_i: ', next_page_i,'page')
 
         time.sleep(1)
         #1~10버튼
         for page_num_i in range(2,12):
 
-            print('page_num_i: ', page_num_i)
+            print('page_num_i: ', page_num_i-1)
             page_xpath = '//*[@id="btfTab"]/ul[2]/li[2]/div/div[6]/section[4]/div[3]/button[{}]'.format(page_num_i)
             time.sleep(3)
             driver.find_element(By.XPATH, page_xpath).click()
@@ -138,7 +140,7 @@ for star_i in range(1, 6):
     titles.clear()
 
     # 카테고리별 데이터를 CSV 파일로 저장
-    df_titles.to_csv('C:/workspace/Star_rating_review/test/crab_{}_star.csv'.format(category[star_i-1]), index=False)
+    df_titles.to_csv('C:/PyCharm_workspace/Star_rating_review/test/깻잎_{}_star.csv'.format(category[star_i-1]), index=False)
 
 
     time.sleep(1)
