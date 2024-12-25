@@ -13,7 +13,7 @@ from keras.models import load_model
 #오늘 날짜의 뉴스를 가져와 얼마나 잘 맞추는지 예측해보기
 
 # CSV 파일 불러오기 및 중복 제거
-df = pd.read_csv('./crawling_data/naver_headline_news20241223.csv')
+df = pd.read_csv('C:/PyCharm_workspace/Star_rating_review/test/Five_star.csv')
 df.drop_duplicates(inplace=True)  # 중복 데이터 제거
 df.reset_index(drop=True, inplace=True)  # 인덱스 초기화
 
@@ -73,7 +73,7 @@ print(X[:5])
 # 기존에 모델에서 썼던 라벨링에 맞춰서 같게 해줘야 된다
 # 그래서 기존 토큰을 저장함
 #저장한 토큰 읽어오기
-with open('./models/news_token_MAX_19.pickle','rb') as f: #새로 만들면 쓸 코드
+with open('C:/PyCharm_workspace/Star_rating_review/Star_rating_review/models/review_token_MAX_305.pickle','rb') as f: #새로 만들면 쓸 코드
     token = pickle.load(f)
 tokened_X = token.texts_to_sequences(X)
 print(tokened_X[:5])
@@ -82,11 +82,11 @@ print(tokened_X[:5])
 #그래서 자름
 #x_pad = pad_sequences(tokened_X, maxlen=16, padding='post', truncating='post')
 for i in range(len(tokened_X)):
-    if len(tokened_X[i])>19:
-        tokened_X[i] = tokened_X[i][:19]
+    if len(tokened_X[i])>100:
+        tokened_X[i] = tokened_X[i][:100]
 
 #어제 보다 작은건 0으로 채움
-X_pad = pad_sequences(tokened_X,19)
+X_pad = pad_sequences(tokened_X,100)
 
 print(X_pad[:5])  # 첫 5개의 샘플 출력
 
@@ -94,7 +94,7 @@ print(X_pad[:5])  # 첫 5개의 샘플 출력
 
 #어제 모델과 비교하기
 
-model = load_model('./models/news_catepory_classfication_model_0.725978672504425.h5')
+model = load_model('./models/review_data_classfication_model_0.6739130616188049.h5')
 preds = model.predict(X_pad)
 
 predicts = []
