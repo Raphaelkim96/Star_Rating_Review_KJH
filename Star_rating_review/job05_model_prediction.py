@@ -13,7 +13,7 @@ from keras.models import load_model
 #오늘 날짜의 뉴스를 가져와 얼마나 잘 맞추는지 예측해보기
 
 # CSV 파일 불러오기 및 중복 제거
-df = pd.read_csv('C:/workspace/Star_rating_review/test/_Five_star_고구마.csv')
+df = pd.read_csv('C:/workspace/Star_rating_review/Star_rating_review/Star_All_Datas/All_Data.csv')
 df.drop_duplicates(inplace=True)  # 중복 데이터 제거
 df.reset_index(drop=True, inplace=True)  # 인덱스 초기화
 
@@ -101,7 +101,7 @@ print(X_pad[:5])  # 첫 5개의 샘플 출력
 
 #어제 모델과 비교하기
 
-model = load_model('C:/workspace/Star_rating_review/Star_rating_review/models/review_data_classfication_model_0.5644873380661011.h5')
+model = load_model('C:/workspace/Star_rating_review/Star_rating_review/models/review_data_classfication_model_0.9052031636238098.h5')
 preds = model.predict(X_pad)
 
 num_classes = len(label)  # 클래스 수 확인
