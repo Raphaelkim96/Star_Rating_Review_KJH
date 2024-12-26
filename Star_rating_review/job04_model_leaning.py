@@ -37,7 +37,7 @@ model.add(Dropout(0.3))
 #마지막에는 결과값 1개만 보면 되기에 return_sequences을 안씀
 model.add(GRU(64, activation='tanh'))
 model.add(Dropout(0.3))
-model.add(Dense(2, activation='softmax'))#마지막 출력 갯수(카테고리 갯수)
+model.add(Dense(1, activation='softmax'))#마지막 출력 갯수(카테고리 갯수)
 
 # 명시적으로 모델 빌드
 #tensorflow버전 차이 문제인거 같음
