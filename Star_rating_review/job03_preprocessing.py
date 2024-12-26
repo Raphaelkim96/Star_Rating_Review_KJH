@@ -16,14 +16,20 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
 # CSV 파일 불러오기 및 중복 제거
-df = pd.read_csv('C:/PyCharm_workspace/Star_rating_review/test/all_Coupang_Review.csv')
+df = pd.read_csv('C:/workspace/Star_rating_review/Star_rating_review/Star_All_Datas/All_Data.csv')
 df.drop_duplicates(inplace=True)  # 중복 데이터 제거
 df.reset_index(drop=True, inplace=True)  # 인덱스 초기화
+
+
+
+
 
 # 데이터 프레임 정보 확인
 print(df.head())  # 상위 5개 데이터 출력
 df.info()  # 데이터 구조 확인
 print(df.category.value_counts())  # 카테고리별 데이터 개수 확인
+
+exit()
 
 # X: 뉴스 제목, Y: 뉴스 카테고리로 분리
 X = df['titles']
@@ -40,11 +46,13 @@ print('labeled_y tail: ',labeled_y[-3:])    # 변환된 레이블 결과 뒤 3�
 label = encoder.classes_                    #encoder class 종류 저장
 print('label',label)                        # 클래스 확인
 
-exit()
+
 
 # 라벨 인코더 저장
-with open('C:/PyCharm_workspace/Star_rating_review/Star_rating_review/models/encoder.pickle', 'wb') as f:
+with open('C:/workspace/Star_rating_review/Star_rating_review/models/encoder.pickle', 'wb') as f:
     pickle.dump(encoder, f)
+
+
 
 # 카테고리 데이터를 원-핫 인코딩
 onehot_Y = to_categorical(labeled_y)
@@ -59,12 +67,18 @@ print('Okt: ', okt_x)
 
 # 형태소 분석을 전체 데이터에 적용
 for i in range(len(X)):
+    if (i%1000)==0:
+        print(i)
     X[i] = okt.morphs(X[i], stem=True)
 
-print(X)  # 분석 결과 확인
+print('X: ',X)  # 분석 결과 확인
+
+
+
+
 
 # 불용어 처리
-stopwords = pd.read_csv('C:/PyCharm_workspace/Star_rating_review/Star_rating_review/stopwords_data/stopwords.csv', index_col=0)
+stopwords = pd.read_csv('C:/workspace/Star_rating_review/Star_rating_review/stopwords_data/stopwords.csv', index_col=0)
 print(stopwords)
 
 # 불용어 및 한 글자 단어 제거
@@ -79,6 +93,8 @@ for sentence in range(len(X)):
 # 전처리 결과 확인
 print(X[:5])
 
+
+
 # 텍스트 데이터 숫자 라벨링 (단어 인덱싱)
 token = Tokenizer()
 token.fit_on_texts(X)  # 전체 데이터 학습
@@ -87,6 +103,13 @@ wordsize = len(token.word_index) + 1  # 고유 단어 수 + 1
 print(wordsize)
 
 
+#max 자르기
+for i in range(len(tokened_X)):
+    if len(tokened_X[i])>129:
+        tokened_X[i] = tokened_X[i][:129]
+
+#어제 보다 작은건 0으로 채움
+X_pad = pad_sequences(tokened_X,129)
 
 
 print(tokened_X[:5])  # 라벨링 결과 일부 확인
@@ -115,9 +138,9 @@ print(X_train.shape, Y_train.shape)  # 학습 데이터 크기 확인
 print(X_test.shape, Y_test.shape)  # 테스트 데이터 크기 확인
 
 # 데이터 저장
-np.save('./crawling_data/review_data_X_train_max_{}_wordsize_{}'.format(max, wordsize), X_train)
-np.save('./crawling_data/review_data_Y_train_max_{}_wordsize_{}'.format(max, wordsize), Y_train)
-np.save('./crawling_data/review_data_X_test_max_{}_wordsize_{}'.format(max, wordsize), X_test)
-np.save('./crawling_data/review_data_Y_test_max_{}_wordsize_{}'.format(max, wordsize), Y_test)
+np.save('C:/workspace/Star_rating_review/Star_rating_review/crawling_data/review_data_X_train_max_{}_wordsize_{}'.format(max, wordsize), X_train)
+np.save('C:/workspace/Star_rating_review/Star_rating_review/crawling_data/review_data_Y_train_max_{}_wordsize_{}'.format(max, wordsize), Y_train)
+np.save('C:/workspace/Star_rating_review/Star_rating_review/crawling_data/review_data_X_test_max_{}_wordsize_{}'.format(max, wordsize), X_test)
+np.save('C:/workspace/Star_rating_review/Star_rating_review/crawling_data/review_data_Y_test_max_{}_wordsize_{}'.format(max, wordsize), Y_test)
 
 

@@ -13,7 +13,7 @@ from keras.models import load_model
 #오늘 날짜의 뉴스를 가져와 얼마나 잘 맞추는지 예측해보기
 
 # CSV 파일 불러오기 및 중복 제거
-df = pd.read_csv('C:/PyCharm_workspace/Star_rating_review/test/Five_star.csv')
+df = pd.read_csv('C:/workspace/Star_rating_review/test/_Five_star_고구마.csv')
 df.drop_duplicates(inplace=True)  # 중복 데이터 제거
 df.reset_index(drop=True, inplace=True)  # 인덱스 초기화
 
@@ -22,13 +22,13 @@ print(df.head())  # 상위 5개 데이터 출력
 df.info()  # 데이터 구조 확인
 print(df.category.value_counts())  # 카테고리별 데이터 개수 확인
 
-# X: 뉴스 제목, Y: 뉴스 카테고리로 분리
+# X: 리뷰 제목, Y: 리뷰 카테고리로 분리
 X = df['titles']
 Y = df['category']
 
 
 # 라벨 인코더 읽어오기
-with open('./models/encoder.pickle', 'rb') as f:
+with open('C:/workspace/Star_rating_review/Star_rating_review/models/encoder.pickle', 'rb') as f:
     encoder = pickle.load(f)
 
 
@@ -42,22 +42,29 @@ labeled_y = encoder.transform(Y)
 
 # 카테고리 데이터를 원-핫 인코딩
 onehot_Y = to_categorical(labeled_y)
-print(onehot_Y)
+print(onehot_Y[0])
 
 
 okt = Okt()
 # 형태소 분석을 전체 데이터에 적용
 for i in range(len(X)):
+    if (i%100)==0:
+        print('형태소:', i)
     X[i] = okt.morphs(X[i], stem=True)
 print(X)  # 분석 결과 확인
 
 # 불용어 처리
-stopwords = pd.read_csv('stopwords_data/stopwords.csv', index_col=0)
+stopwords = pd.read_csv('C:/workspace/Star_rating_review/Star_rating_review/stopwords_data/stopwords.csv', index_col=0)
 print(stopwords)
 
 # 불용어 및 한 글자 단어 제거
 for sentence in range(len(X)):
     words = []
+
+    if (sentence%100)==0:
+        print('불용어 처리:', sentence)
+
+
     for word in range(len(X[sentence])):
         if len(X[sentence][word]) > 1:  # 한 글자 제거
             if X[sentence][word] not in list(stopwords['stopword']):  # 불용어 제거
@@ -73,7 +80,7 @@ print(X[:5])
 # 기존에 모델에서 썼던 라벨링에 맞춰서 같게 해줘야 된다
 # 그래서 기존 토큰을 저장함
 #저장한 토큰 읽어오기
-with open('C:/PyCharm_workspace/Star_rating_review/Star_rating_review/models/review_token_MAX_305.pickle','rb') as f: #새로 만들면 쓸 코드
+with open('C:/workspace/Star_rating_review/Star_rating_review/models/review_token_MAX_129.pickle','rb') as f: #새로 만들면 쓸 코드
     token = pickle.load(f)
 tokened_X = token.texts_to_sequences(X)
 print(tokened_X[:5])
@@ -94,8 +101,12 @@ print(X_pad[:5])  # 첫 5개의 샘플 출력
 
 #어제 모델과 비교하기
 
-model = load_model('./models/review_data_classfication_model_0.6739130616188049.h5')
+model = load_model('C:/workspace/Star_rating_review/Star_rating_review/models/review_data_classfication_model_0.5644873380661011.h5')
 preds = model.predict(X_pad)
+
+num_classes = len(label)  # 클래스 수 확인
+onehot_Y = to_categorical(labeled_y, num_classes=num_classes)  # 클래스 수 명시
+print('클래스 수: ',onehot_Y)
 
 predicts = []
 for pred in preds:
