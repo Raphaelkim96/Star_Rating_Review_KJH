@@ -35,7 +35,7 @@ review-star-classifier/
 
 1. 저장소 클론
 ```bash
-git clone https://github.com/username/review-star-classifier.git
+[git clone https://github.com/username/review-star-classifier.git](https://github.com/Raphaelkim96/Star_rating_review_KJH.git)
 cd review-star-classifier
 ```
 
