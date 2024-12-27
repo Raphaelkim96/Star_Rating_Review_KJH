@@ -8,9 +8,9 @@
 
 ## 🛠 개발 환경
 
-- Python 3.8.x
-- TensorFlow 2.6.0
-- CUDA 11.2 (GPU 지원)
+- Python 3.10
+- TensorFlow 2.18.0
+
 
 ## 📁 프로젝트 구조
 
